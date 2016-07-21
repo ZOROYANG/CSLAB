@@ -3,10 +3,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_ARITH.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
 entity decode is
 	port(
 		clk, rst: in std_logic;
@@ -20,7 +16,7 @@ entity decode is
 		mem_signal: out std_logic_vector(2 downto 0);
 		alu_signal: out std_logic_vector(5 downto 0);
 		cmp_signal: out std_logic_vector(3 downto 0);
-		wb_signal: out std_logic_vector(1 downto 0);
+		wb_signal: out std_logic_vector(1 downto 0)
 	);
 end decode;
 
@@ -102,14 +98,14 @@ begin
 				when F_SLTIU | F_ANDI | F_ORI | F_XORI => imme <= ext(ins(15 downto 0), 32);
 				when F_LUI => imme <= ins(15 downto 0) & (others => '0');
 				when others => imme <= sxt(ins(15 downto 0), 32);
-			end if;
+			end case;
 			--- PC
 			case first is
 				when F_ZERO => npc <= pc + lpc;
 				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ => npc <= pc + sxt(ins(15 downto 0), 32);
 				when F_J | F_JAL => npc <= pc + sxt(ins(25 downto 0, 32));
 				when others => npc <= pc + lpc;
-			end if;
+			end case;
 			--- mem:
 			--- sw sb lw lb lbu lhu no
 			--- 1  2  4  6  7   5   0

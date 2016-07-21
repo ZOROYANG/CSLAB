@@ -3,23 +3,80 @@ use IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_ARITH.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
 entity cpu is
 	port(
-		clk, rst: in std_logic;
+		clk, rst: in std_logic
 	);
 end cpu;
 
 architecture Behavioral of cpu is
+component decode is
+	port(
+		clk, rst: in std_logic;
+		pc: in std_logic_vector(31 downto 0);
+		ins: in std_logic_vector(31 downto 0);
+		state: in std_logic_vector(2 downto 0);
+		
+		npc: out std_logic_vector(31 downto 0);
+		rs_addr, rt_addr, rd_addr: out std_logic_vector(5 downto 0);
+		
+		mem_signal: out std_logic_vector(2 downto 0);
+		alu_signal: out std_logic_vector(5 downto 0);
+		cmp_signal: out std_logic_vector(3 downto 0);
+		wb_signal: out std_logic_vector(1 downto 0)
+	);
+end component;
+component alu is
+	port(
+		clk, rst: in std_logic;
+		
+		rd_addr, rt_addr: in std_logic_vector(5 downto 0);
+		rs_value, rt_value, rd_value, imme: in std_logic_vector(31 downto 0);
+		mem_signal: in std_logic_vector(2 downto 0);
+		alu_signal: in std_logic_vector(5 downto 0);
+		wb_signal: in std_logic_vector(1 downto 0);
+		state: in std_logic_vector(2 downto 0);
+		
+		alu_result: out std_logic_vector(31 downto 0);
+		data_out: out std_logic_vector(31 downto 0)
+	);
+end component;
+component phymem is
+	port(
+		clk, rst: in std_logic;
+		state: in std_logic_vector(2 downto 0);
+		addr: in std_logic_vector(19 downto 0);
+		data_in: in std_logic_vector(31 downto 0);
+		data_out: out std_logic_vector(31 downto 0);
+		ram_signal: in std_logic_vector(1 downto 0);
+		flash_signal: in std_logic_vector(1 downto 0);
+		
+		ram_addr: out std_logic_vector(19 downto 0);
+		ram_data: inout std_logic_vector(31 downto 0);
+		ram_ce: out std_logic;
+		ram_oe: out std_logic;
+		ram_we: out std_logic;
+
+		flash_addr: out STD_LOGIC_VECTOR(22 downto 0);
+		flash_data: inout STD_LOGIC_VECTOR(15 downto 0);
+		flash_ce0: out std_logic;
+		flash_ce1: out std_logic;
+		flash_ce2: out std_logic;
+		flash_byte: out std_logic;
+		flash_vpen: out std_logic;
+		flash_rp: out std_logic;
+		flash_oe: out std_logic;
+		flash_we: out std_logic
+	);
+end component;
+
+
 
 signal reg: array(63 downto 0) of std_logic_vector(31 downto 0);
 signal rs_addr, rt_addr, rd_addr: std_logic_vector(5 downto 0);
 signal pc: std_logic_vector(31 downto 0);
 signal rs_value, rt_value, rd_value: std_logic_vector(31 downto 0);
-signal state : std_logic_vector(1 downto 0):= "000";
+signal state : std_logic_vector(2 downto 0):= "000";
 signal alumem: std_logic;
 
 begin
@@ -99,8 +156,19 @@ begin
 			--- wb:
 			--- ->t ->d ->RA no
 			--- 1   2   3    0
-			if alumem = '0' then wb_result := alu_result;
-				else wb_result := mem_result; end if;
+			--- mem:
+			--- sw sb lw lb lbu lhu no
+			--- 1  2  4  6  7   5   0
+			if alumem = '0' then
+				wb_result := alu_result;
+			else
+			 	case mem_signal is
+					when "101" => wb_result := ext(mem_result(15 downto 0), 32);
+					when "110" => wb_result := sxt(mem_result(7 downto 0), 32);
+					when "111" => wb_result := ext(mem_result(7 downto 0), 32);
+					when others => wb_result := mem_result;
+				end case;
+			end if;
 			case wb_signal is
 				when "01" => reg(rt_addr) <= wb_result;
 				when "10" => reg(rd_addr) <= wb_result;
@@ -109,5 +177,42 @@ begin
 			end case;
 		end if;
 	end process;
+
+	u_ID: decode port map(clk => clk, rst => rst,
+		pc => pc, ins => ram_data,
+		state => state, npc => pc,
+		rs_addr => rs_addr, rt_addr => rt_addr, rd_addr => rd_addr,
+		mem_signal => mem_signal, alu_signal => alu_signal,
+		cmp_signal => cmp_signal, wb_signal => wb_signal);
+
+	u_EX: alu port map(clk => clk, rst => rst,
+		rd_addr => rd_addr, rt_addr => rt_addr,
+		rs_value => rs_value, rt_value => rt_value, rd_value => rd_value,
+		imme => imme,
+		mem_signal => mem_signal, alu_signal => alu_signal, wb_signal => wb_signal,
+		state => state,
+		alu_result => alu_result, data_out => mem_data);
+
+	u_MEM0: phymem port map(clk => clk, rst => rst,
+		state => state,
+		addr => alu_result, data_in => mem_data, data_out => mem_out,
+		ram_signal => ram_signal, flash_signal => flash_signal,
+		ram_addr => mem_addr, ram_data => mem_data,
+		ram_ce => ram_ce, ram_oe => ram_oe, ram_we => ram_we,
+		flash_addr => flash_addr, flash_data => flash_data,
+		flash_ce0 => flash_ce0, flash_ce1 => flash_ce1, flash_ce2 => flash_ce2,
+		flash_byte => flash_byte, flash_vpen => flash_vpen,
+		flash_rp => flash_rp, flash_oe => flash_oe, flash_we => flash_we);
+
+	u_MEM1: phymem port map(clk => clk, rst => rst,
+		state => state,
+		addr => alu_result, data_in => ext(mem_data(7 downto 0), 32), data_out => mem_out,
+		ram_signal => "11", flash_signal => "00",
+		ram_addr => mem_addr, ram_data => mem_data,
+		ram_ce => ram_ce, ram_oe => ram_oe, ram_we => ram_we,
+		flash_addr => flash_addr, flash_data => flash_data,
+		flash_ce0 => flash_ce0, flash_ce1 => flash_ce1, flash_ce2 => flash_ce2,
+		flash_byte => flash_byte, flash_vpen => flash_vpen,
+		flash_rp => flash_rp, flash_oe => flash_oe, flash_we => flash_we);
 
 end Behavioral;

@@ -3,10 +3,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_ARITH.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
 entity alu is
 	port(
 		clk, rst: in std_logic;
@@ -32,11 +28,8 @@ begin
 	variable imreg :std_logic_vector(5 downto 0);
 	begin
 		if rst = '0' then
-			mem_out <= "000";
-			wb_out <= "00";
+			null;
 		elsif rising_edge(clk) and state = "011" then
-			wb_out <= wb_signal;
-			mem_out <= mem_signal;
 			data_out <= rt_value;
 			if alu_signal(5) = '1' then
 				imreg := imme;
