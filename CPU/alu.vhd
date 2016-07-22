@@ -14,7 +14,7 @@ entity alu is
 		mem_signal: in std_logic_vector(2 downto 0);
 		alu_signal: in std_logic_vector(5 downto 0);
 		wb_signal: in std_logic_vector(1 downto 0);
-		state: in std_logic_vector(2 downto 0);
+		state: in STATUS;
 		
 		alu_result: out std_logic_vector(31 downto 0);
 		data_out: out std_logic_vector(31 downto 0)
@@ -31,7 +31,7 @@ begin
 	begin
 		if rst = '0' then
 			null;
-		elsif rising_edge(clk) and state = "011" then
+		elsif rising_edge(clk) and state = EX then
 			data_out <= rt_value;
 			if alu_signal(5) = '1' then
 				imreg := imme;

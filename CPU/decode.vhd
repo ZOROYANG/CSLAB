@@ -32,7 +32,7 @@ begin
 		last := ins(5 downto 0);
 		if rst = '0' then
 			npc <= (others => '0');
-		elsif rising_edge(clk) and state = "010" then
+		elsif rising_edge(clk) and state = ID then
 			--- addr
 			rs_addr <= '0' & ins(25 downto 21);
 			rt_addr <= '0' & ins(20 downto 16);

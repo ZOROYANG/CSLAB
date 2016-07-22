@@ -66,6 +66,8 @@ constant ra : std_logic_vector(5 downto 0) := "011111";
 constant epc: std_logic_vector(5 downto 0) := "011110";
 constant lpc: std_logic_vector(2 downto 0) := "100";
 
+type STATUS is (IF0, IF1, ID, EX, MA0, MA1, MA2, MA3, ST, S0, S1, S2, S3, S4, S5);
+
 -- type <new_type> is
 --  record
 --    <type_name>        : std_logic_vector( 7 downto 0);

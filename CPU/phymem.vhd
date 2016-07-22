@@ -9,9 +9,8 @@ entity phymem is
 	port(
 		clk, rst: in std_logic;
 		state: in std_logic_vector(2 downto 0);
-		pc: in std_logic_vector(19 downto 0);
-		alu_result: in std_logic_vector(19 downto 0);
-		data_in: in std_logic_vector(31 downto 0);
+		addr: in std_logic_vector(19 downto 0);
+		data: in std_logic_vector(31 downto 0);
 		ram_signal: in std_logic_vector(1 downto 0);
 		
 		ram_addr: out std_logic_vector(19 downto 0);
@@ -25,26 +24,19 @@ entity phymem is
 end phymem;
 
 architecture Behavioral of phymem is
-signal saved: std_logic_vector(31 downto 0);
 begin
-	process(clk, rst)	-- phymem
-	variable addr: std_logic_vector(19 downto 0);
-	variable data: std_logic_vector(31 downto 0);
+	process(clk, rst)
 	begin
 		if rst = '0' then
+			ram_addr => (others => '0');
 		elsif rising_edge(clk) then
-			if state = "000" or state = "010" or state = "100" or state = "110" then
-				if state = "110" then saved <= ram_data; end if;
+			if state = IF0 or state = ID or state = MA0 or state = MA2 or state = S0 then
+				saved <= ram_data;
 				ram_data <= (others => 'Z');
 				ram_ce <= '1';
 				ram_oe <= '1';
 				ram_we <= '1';
-			elsif state = "001" or state = "101" or state = "111" then
-				if state = "001" then addr := pc; else addr := alu_result; end if;
-				if state = "101" then data := data_in;
-				elsif state = "111" then data := saved(31 downto 8) & data_in(7 downto 0);
-				else data := (others => 'Z'); end if;
-
+			elsif state = IF1 or state = MA1 or state = MA3 or state = S5 then
 				if ram_signal(1) = '1' then
 					ram_addr <= addr;
 					ram_ce <= '0';
