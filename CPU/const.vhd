@@ -54,9 +54,12 @@ constant F_SW : std_logic_vector(5 downto 0) := 	"101011";
 constant F_LB : std_logic_vector(5 downto 0) := 	"100000";
 constant F_LBU : std_logic_vector(5 downto 0) := 	"100100";
 constant F_SB : std_logic_vector(5 downto 0) := 	"101000";
-constant F_ERETTLBWI : std_logic_vector(5 downto 0) := 	"010000";
-constant F_MFC0MTC0 : std_logic_vector(5 downto 0) := 	"010000";
+constant F_CP : std_logic_vector(5 downto 0) := 	"010000";
 constant F_LHU : std_logic_vector(5 downto 0) := 	"100101";
+constant L_ERET : std_logic_vector(5 downto 0) := 	"011000";
+constant L_MFC0MTC0 : std_logic_vector(5 downto 0) := 	"000000";
+constant L_TLBWI : std_logic_vector(5 downto 0) := "000010";
+
 
 constant ra : std_logic_vector(5 downto 0) := "011111";
 constant epc: std_logic_vector(5 downto 0) := "011110";

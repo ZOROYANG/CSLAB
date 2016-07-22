@@ -84,8 +84,13 @@ begin
 				-- when F_BEQ =>
 				-- when F_BNE =>
 				-- when F_LUI =>
-				-- when F_ERETTLBWI =>
-				-- when F_MFC0MTC0 =>
+				-- when F_CP =>
+				-- case last is
+					-- when L_ERET =>
+					-- when L_TLBWI =>
+					-- when L_MFC0MTC0 =>
+					-- when others =>
+				-- end case;
 				-- when others =>
 			-- end case;
 			
@@ -136,7 +141,7 @@ begin
 				when F_BGEZBLTZ => cmp_signal <= "010" & not ins(16);
 				when F_BLEZ => cmp_signal <= "0110";
 				when F_J | F_JAL => cmp_signal <= "0111";
-				when F_ERETTLBWI =>
+				when F_CP =>
 					if last = L_ERET then cmp_signal <= "1000"; else cmp_signal <= "0000"; end if;
 				when others => cmp_signal <= "0000";
 			end case;
@@ -150,10 +155,12 @@ begin
 					when L_JALR => wb_signal <= "11";
 					when others => wb_signal <= "10";
 				end case;
-				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ | F_J | F_SB | F_SW | F_ERETTLBWI => wb_signal <= "00";
+				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ | F_J | F_SB | F_SW => wb_signal <= "00";
 				when F_JAL => wb_signal <= "11";
-				when F_MFC0MTC0 =>
-					if ins(23) = '0' then wb_signal <= "01"; else wb_signal <= "10"; end if;
+				when F_CP =>
+					if last = L_MFC0MTC0 then
+						if ins(23) = '0' then wb_signal <= "01"; else wb_signal <= "10"; end if;
+					else wb_signal <= "00"; end if;
 				when others => wb_signal <= "01";
 			end case;
 			--- alu signal: 5+4+3210
@@ -193,7 +200,9 @@ begin
 				when F_ANDI => alu_signal <= "100010";
 				when F_ORI => alu_signal <= "100011";
 				when F_XORI => alu_signal <= "100100";
-				when F_MFC0MTC0 => alu_signal <= "00101" & ins(23);
+				when F_CP =>
+					if last = L_MFC0MTC0 then alu_signal <= "00101" & ins(23);
+					else alu_signal <= "000000"; end if;
 				when others => alu_signal <= "000000";
 			end case;
 			
