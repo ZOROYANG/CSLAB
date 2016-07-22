@@ -1,7 +1,7 @@
 library IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.STD_LOGIC_ARITH.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.NUMERIC_STD.ALL;
 
 use work.const.ALL;
 
@@ -27,7 +27,7 @@ signal hilo : std_logic_vector(63 downto 0);
 
 begin
 	process(clk, rst)
-	variable imreg :std_logic_vector(5 downto 0);
+	variable imreg :std_logic_vector(31 downto 0);
 	begin
 		if rst = '0' then
 			null;

@@ -77,16 +77,21 @@ component phymem is
 end component;
 
 
-
-signal reg: array(63 downto 0) of std_logic_vector(31 downto 0);
+type array_vector is array(63 downto 0) of std_logic_vector(31 downto 0);
+signal reg: array_vector := (others => (others => '0'));
 signal rs_addr, rt_addr, rd_addr: std_logic_vector(5 downto 0);
 signal alu_signal: std_logic_vector(5 downto 0);
+signal cmp_signal: std_logic_vector(3 downto 0);
 signal mem_signal: std_logic_vector(2 downto 0);
 signal wb_signal: std_logic_vector(1 downto 0);
 signal alu_result: std_logic_vector(31 downto 0);
+signal rs_value, rt_value, rd_value: std_logic_vector(31 downto 0);
 signal pc: std_logic_vector(31 downto 0);
+signal npc: std_logic_vector(31 downto 0);
 signal imme: std_logic_vector(31 downto 0);
+signal mem_data: std_logic_vector(31 downto 0);
 signal state : std_logic_vector(2 downto 0):= "000";
+signal alumem: std_logic;
 
 begin
 
@@ -95,22 +100,23 @@ begin
 	begin
 		if rst = '0' then
 			state <= "000";
-			reg <= (others => '0');
 		elsif rising_edge(clk) then
 			case state is
-				when "000" | "001" | "010" | "100" | "110" | "111" => state <= state + "001"; alumem <= '1';
+				when "000" | "001" | "010" | "100" | "110" | "111" => state <= state + "001";
 				when "011" =>
 					if mem_signal = "000" then state <= "000"; alumem <= '0';
-						else state <= "100"; alumem <= '1'; end if;
+						else state <= "100"; end if;
 				when "101" =>
 					if mem_signal = "010" then state <= "110";
 						else state <= "000"; end if;
+					alumem <= '1';
+				when others => null;
 			end case;
 		end if;
 	end process;
 	
 	process(clk, rst)	-- branch calculation and load register
-	variable sv, rv: std_logic_vector(31 downto 0);
+	variable sv, tv: std_logic_vector(31 downto 0);
 	begin
 		if rst = '0' then
 			pc <= (others => '0');
@@ -134,18 +140,18 @@ begin
 					-- if last = L_ERET then cmp_signal <= "1000"; else cmp_signal <= "0000"; end if;
 				-- when others => cmp_signal <= "0000";
 			-- end case;
-			sv := reg(rs_addr)
-			tv := reg(rt_addr)
+			sv := reg(conv_integer(rs_addr));
+			tv := reg(conv_integer(rt_addr));
 			
-			if cmp_signal = "0001" and sv = tv or cmp_signal = "0010" and sv /= tv or
-				cmp_signal = "0011" and sv > 0 or cmp_signal = "0100" and sv >= 0 or
-				cmp_signal = "0101" and sv < 0 or cmp_signal = "0110" and sv <= 0 or
+			if (cmp_signal = "0001" and sv = tv) or (cmp_signal = "0010" and sv /= tv) or
+				(cmp_signal = "0011" and sv > 0) or (cmp_signal = "0100" and sv >= 0) or
+				(cmp_signal = "0101" and sv < 0) or (cmp_signal = "0110" and sv <= 0) or
 				cmp_signal = "0111" then
 				pc <= npc;
 			elsif cmp_signal = "1111" then
 				pc <= sv;
 			elsif cmp_signal = "1000" then
-				pc <= reg(epc);
+				pc <= reg(conv_integer(epc));
 			else
 				pc <= pc + lpc;
 			end if;
@@ -156,7 +162,7 @@ begin
 	variable wb_result: std_logic_vector(31 downto 0);
 	begin
 		if rst = '0' then
-			null;
+			reg <= (others => (others => '0'));
 		elsif rising_edge(clk) and state = "000" then
 			--- wb:
 			--- ->t ->d ->RA no
@@ -168,16 +174,16 @@ begin
 				wb_result := alu_result;
 			else
 			 	case mem_signal is
-					when "101" => wb_result := ext(mem_result(15 downto 0), 32);
-					when "110" => wb_result := sxt(mem_result(7 downto 0), 32);
-					when "111" => wb_result := ext(mem_result(7 downto 0), 32);
-					when others => wb_result := mem_result;
+					when "101" => wb_result := ext(ram_data(15 downto 0), 32);
+					when "110" => wb_result := sxt(ram_data(7 downto 0), 32);
+					when "111" => wb_result := ext(ram_data(7 downto 0), 32);
+					when others => wb_result := ram_data;
 				end case;
 			end if;
 			case wb_signal is
-				when "01" => reg(rt_addr) <= wb_result;
-				when "10" => reg(rd_addr) <= wb_result;
-				when "11" => reg(ra) <= wb_result;
+				when "01" => reg(conv_integer(rt_addr)) <= wb_result;
+				when "10" => reg(conv_integer(rd_addr)) <= wb_result;
+				when "11" => reg(conv_integer(ra)) <= wb_result;
 				when others => null;
 			end case;
 		end if;
@@ -185,25 +191,32 @@ begin
 
 	u_ID: decode port map(clk => clk, rst => rst,
 		pc => pc, ins => ram_data,
-		state => state, npc => pc,
+		state => state, npc => npc,
 		rs_addr => rs_addr, rt_addr => rt_addr, rd_addr => rd_addr,
 		imme => imme,
 		mem_signal => mem_signal, alu_signal => alu_signal,
 		cmp_signal => cmp_signal, wb_signal => wb_signal);
 
+	rs_value <= reg(conv_integer(rs_addr));
+	rt_value <= reg(conv_integer(rt_addr));
+	rd_value <= reg(conv_integer(rd_addr));
+	
 	u_EX: alu port map(clk => clk, rst => rst,
 		rd_addr => rd_addr, rt_addr => rt_addr,
-		rs_value => reg(rs_addr), rt_value => reg(rt_addr), rd_value => reg(rd_addr),
+		rs_value => rs_value,
+		rt_value => rt_value,
+		rd_value => rd_value,
 		imme => imme,
 		mem_signal => mem_signal, alu_signal => alu_signal, wb_signal => wb_signal,
 		state => state,
-		alu_result => alu_result, data_out => mem_data);
+		alu_result => alu_result,
+		data_out => mem_data);
 
 	u_MEM: phymem port map(clk => clk, rst => rst,
-		state => state, pc => pc,
-		alu_result => alu_result, data_in => mem_data,
-		ram_signal => ram_signal,
-		ram_addr => mem_addr, ram_data => mem_data,
+		state => state, pc => pc(19 downto 0),
+		alu_result => alu_result(19 downto 0), data_in => mem_data,
+		ram_signal => mem_signal(2 downto 1),
+		ram_addr => ram_addr, ram_data => ram_data,
 		ram_ce => ram_ce, ram_oe => ram_oe, ram_we => ram_we,
 		rxd => rxd, txd => txd);
 

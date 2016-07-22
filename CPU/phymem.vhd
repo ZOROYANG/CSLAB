@@ -26,10 +26,10 @@ end phymem;
 
 architecture Behavioral of phymem is
 signal saved: std_logic_vector(31 downto 0);
-variable addr: std_logic_vector(19 downto 0);
-variable data: std_logic_vector(31 downto 0);
 begin
 	process(clk, rst)	-- phymem
+	variable addr: std_logic_vector(19 downto 0);
+	variable data: std_logic_vector(31 downto 0);
 	begin
 		if rst = '0' then
 		elsif rising_edge(clk) then

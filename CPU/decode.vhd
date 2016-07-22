@@ -34,8 +34,8 @@ begin
 			npc <= (others => '0');
 		elsif rising_edge(clk) and state = "010" then
 			--- addr
-			rs_addr <= 0 & ins(25 downto 21);
-			rt_addr <= 0 & ins(20 downto 16);
+			rs_addr <= '0' & ins(25 downto 21);
+			rt_addr <= '0' & ins(20 downto 16);
 			rd_addr <= ins(30) & ins(15 downto 11);
 			
 			-- case first is
@@ -104,14 +104,14 @@ begin
 				end case;
 				when F_JAL => imme <= pc + lpc;
 				when F_SLTIU | F_ANDI | F_ORI | F_XORI => imme <= ext(ins(15 downto 0), 32);
-				when F_LUI => imme <= ins(15 downto 0) & (others => '0');
+				when F_LUI => imme <= ins(15 downto 0) & ZERO16;
 				when others => imme <= sxt(ins(15 downto 0), 32);
 			end case;
 			--- PC
 			case first is
 				when F_ZERO => npc <= pc + lpc;
 				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ => npc <= pc + sxt(ins(15 downto 0), 32);
-				when F_J | F_JAL => npc <= pc + sxt(ins(25 downto 0, 32));
+				when F_J | F_JAL => npc <= pc + sxt(ins(25 downto 0), 32);
 				when others => npc <= pc + lpc;
 			end case;
 			--- mem:
