@@ -1,7 +1,9 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_ARITH.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+use work.const.ALL;
 
 entity cpu is
 	port(
