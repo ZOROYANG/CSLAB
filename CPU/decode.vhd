@@ -12,6 +12,7 @@ entity decode is
 		
 		npc: out std_logic_vector(31 downto 0);
 		rs_addr, rt_addr, rd_addr: out std_logic_vector(5 downto 0);
+		imme: out std_logic_vector(31 downto 0);
 		
 		mem_signal: out std_logic_vector(2 downto 0);
 		alu_signal: out std_logic_vector(5 downto 0);
