@@ -20,27 +20,30 @@ entity loader is
 end loader;
 
 architecture Behavioral of loader is
-
+signal addr: std_logic_vector(22 downto 0);
 begin
 	process (clk, rst)
 	begin
 		if rst = '0' then
-			flash_addr <= (0 => '0', others => '1');
+			flash_addr <= (others => '0');
+			addr <= (others => '0');
 		elsif rising_edge(clk) then
-			if flash_addr < (8 => '1', 7 => '1', others => '0') then
+			if conv_integer(addr) < 768 then
 				flash_stop <= '0';
 				case state is
 					when S0 =>
 						flash_oe <= '1';
 						flash_data <= (others => 'Z');
-						flash_addr <= flash_addr + "10";
+						flash_addr <= addr;
+						addr <= addr + "10";
 					when S1 =>
 						flash_oe <= '0';
 					when S2 =>
 						flash_out(31 downto 16) <= flash_data;
 						flash_oe <= '1';
 						flash_data <= (others => 'Z');
-						flash_addr <= flash_addr + "10";
+						flash_addr <= addr;
+						addr <= addr + "10";
 					when S3 =>
 						flash_oe <= '0';
 					when S4 =>
@@ -51,7 +54,6 @@ begin
 			else
 				flash_stop <= '1';
 			end if;
-		else flash_ie <= '1';
 		end if;
 	end process;
 end Behavioral;

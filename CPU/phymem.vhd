@@ -8,7 +8,7 @@ use work.const.ALL;
 entity phymem is
 	port(
 		clk, rst: in std_logic;
-		state: in std_logic_vector(2 downto 0);
+		state: in status;
 		addr: in std_logic_vector(19 downto 0);
 		data: in std_logic_vector(31 downto 0);
 		ram_signal: in std_logic_vector(1 downto 0);
@@ -28,10 +28,9 @@ begin
 	process(clk, rst)
 	begin
 		if rst = '0' then
-			ram_addr => (others => '0');
+			ram_addr <= (others => '0');
 		elsif rising_edge(clk) then
 			if state = IF0 or state = ID or state = MA0 or state = MA2 or state = S0 then
-				saved <= ram_data;
 				ram_data <= (others => 'Z');
 				ram_ce <= '1';
 				ram_oe <= '1';

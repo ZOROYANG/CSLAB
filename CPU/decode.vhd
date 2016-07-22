@@ -10,7 +10,7 @@ entity decode is
 		clk, rst: in std_logic;
 		pc: in std_logic_vector(31 downto 0);
 		ins: in std_logic_vector(31 downto 0);
-		state: in std_logic_vector(2 downto 0);
+		state: in status;
 		
 		npc: out std_logic_vector(31 downto 0);
 		rs_addr, rt_addr, rd_addr: out std_logic_vector(5 downto 0);
