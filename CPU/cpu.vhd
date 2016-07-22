@@ -65,24 +65,12 @@ component phymem is
 		alu_result: in std_logic_vector(19 downto 0);
 		data_in: in std_logic_vector(31 downto 0);
 		ram_signal: in std_logic_vector(1 downto 0);
-		flash_signal: in std_logic_vector(1 downto 0);
 		
 		ram_addr: out std_logic_vector(19 downto 0);
 		ram_data: inout std_logic_vector(31 downto 0);
 		ram_ce: out std_logic;
 		ram_oe: out std_logic;
 		ram_we: out std_logic;
-
-		flash_addr: out STD_LOGIC_VECTOR(22 downto 0);
-		flash_data: inout STD_LOGIC_VECTOR(15 downto 0);
-		flash_ce0: out std_logic;
-		flash_ce1: out std_logic;
-		flash_ce2: out std_logic;
-		flash_byte: out std_logic;
-		flash_vpen: out std_logic;
-		flash_rp: out std_logic;
-		flash_oe: out std_logic;
-		flash_we: out std_logic;
 
 		rxd, txd: out std_logic
 	);
@@ -214,13 +202,9 @@ begin
 	u_MEM: phymem port map(clk => clk, rst => rst,
 		state => state, pc => pc,
 		alu_result => alu_result, data_in => mem_data,
-		ram_signal => ram_signal, flash_signal => flash_signal,
+		ram_signal => ram_signal,
 		ram_addr => mem_addr, ram_data => mem_data,
 		ram_ce => ram_ce, ram_oe => ram_oe, ram_we => ram_we,
-		flash_addr => flash_addr, flash_data => flash_data,
-		flash_ce0 => flash_ce0, flash_ce1 => flash_ce1, flash_ce2 => flash_ce2,
-		flash_byte => flash_byte, flash_vpen => flash_vpen,
-		flash_rp => flash_rp, flash_oe => flash_oe, flash_we => flash_we,
 		rxd => rxd, txd => txd);
 
 end Behavioral;
