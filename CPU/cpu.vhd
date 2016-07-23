@@ -9,7 +9,7 @@ entity cpu is
 	port(
 		clk0, clk1, rst: in std_logic;
 		sw: in std_logic_vector(31 downto 0);
-		led: out std_logic_vector(16 downto 0);
+		led: out std_logic_vector(15 downto 0);
 		dyp: out std_logic_vector(13 downto 0);
 		rxd, txd: out std_logic;
 
@@ -116,13 +116,13 @@ signal addr_in: std_logic_vector(19 downto 0);
 signal data_in: std_logic_vector(31 downto 0);
 signal flash_out: std_logic_vector(31 downto 0);
 signal mem_data: std_logic_vector(31 downto 0);
-signal num: std_logic_vector(5 downto 0);
+signal num: std_logic_vector(7 downto 0);
 signal state : status:= S0;
 signal alumem, flash_stop: std_logic;
 
 begin
 
-	process(rst, state, sw)
+	process(rst, state, sw, clk0, clk1)
 	begin
 		if rst = '0' then
 			clk <= '0';
@@ -133,16 +133,25 @@ begin
 		end if;
 	end process;
 
-	process(sw)
+	process(sw, reg, pc, npc, imme, ram_data, alu_signal, cmp_signal, mem_signal, wb_signal, ram_signal)
 	begin
 		if sw(30) = '1' then
 			if sw(29) = '0' then
-				led <= reg(conv_integer(sw(5 downto 0)));
-			else with sw(1 downto 0) select
-				led <= pc when "00", npc when "01", imme when "10", ram_data when "11";
+				led <= reg(conv_integer(sw(5 downto 0)))(15 downto 0);
+			else case sw(1 downto 0) is
+					when "00" => led <= pc(15 downto 0);
+					when "01" => led <= npc(15 downto 0);
+					when "10" => led <= imme(15 downto 0);
+					when "11" => led <= ram_data(15 downto 0);
+					when others => null;
+				end case;
 			end if;
 		elsif sw(29) = '1' then
-			led <= alu_signal & "00" & cmp_signal & "0" & mem_signal & wb_signal & "0000" & ram_signal & "00000000";
+			if sw(28) = '0' then
+				led <= alu_signal & "00" & cmp_signal & "0" & mem_signal;
+			else
+				led <= wb_signal & "0000" & ram_signal & "00000000";
+			end if;
 		elsif sw(28) = '1' then
 			null;
 		end if;
@@ -150,10 +159,25 @@ begin
 
 	process(state)
 	begin
-		with state select
-			num <= "00000" when S0, "00001" when S1, "00010" when S2, "00011" when S3, "00100" when S4, "00101" when S5,
-				"10000" when IF0, "10001" when IF1, "10010" when ID, "10011" when EX, "10100" when MA0, "10101" when MA1,
-				"10110" when MA2, "10111" when MA3;
+		case state is
+			when S0 => num <= "00000000";
+			when S1 => num <= "00000001";
+			when S2 => num <= "00000010";
+			when S3 => num <= "00000011";
+			when S4 => num <= "00000100";
+			when IF0 => num <= "00010000";
+			when IF1 => num <= "00010001";
+			when ID => num <= "00010010";
+			when EX => num <= "00010011";
+			when MA0 => num <= "00010100";
+			when MA2 => num <= "00010110";
+			when MA3 => num <= "00010111";
+			when others => num <= "11111111";
+		end case;
+--		with state select
+--			num <= "00000" when S0, "00001" when S1, "00010" when S2, "00011" when S3, "00100" when S4, "00101" when S5,
+--				"10000" when IF0, "10001" when IF1, "10010" when ID, "10011" when EX, "10100" when MA0, "10101" when MA1,
+--				"10110" when MA2, "10111" when MA3;
 	end process;
 
 	process(clk, rst)
@@ -324,7 +348,7 @@ begin
 		flash_out => flash_out, flash_stop => flash_stop, flash_oe => flash_oe);
 
 	u_DIS: display port map( 
-		num => "000" & num,
+		num => num,
 		display_h => dyp(13 downto 7),
 		display_l => dyp(6 downto 0));
 
