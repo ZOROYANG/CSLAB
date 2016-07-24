@@ -13,6 +13,8 @@ use IEEE.STD_LOGIC_1164.all;
 package const is
 
 constant ZERO16 : std_logic_vector(15 downto 0) :=   (others => '0');
+constant THI : std_logic_vector(31 downto 0) := "10111111110100000000001111111000";
+
 constant F_ZERO : std_logic_vector(5 downto 0) :=   "000000";
 constant L_ADDU : std_logic_vector(5 downto 0) := 	"100001";
 constant L_SLT : std_logic_vector(5 downto 0) := 	"101010";
