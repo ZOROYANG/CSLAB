@@ -44,7 +44,7 @@ begin
 				rxd <= '1';
 			elsif state = IF1 or state = MA1 or state = MA3 or state = S5 then
 				if ram_signal(1) = '1' then
-					if addr = THI then
+					if addr = THI(19 downto 0) then
 						if ram_signal(0) = '0' then rxd <= '0'; else
 							txd <= '0';
 							ram_data <= data;
