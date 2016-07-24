@@ -11,7 +11,8 @@ entity cpu is
 		sw: in std_logic_vector(31 downto 0);
 		led: out std_logic_vector(15 downto 0);
 		dyp: out std_logic_vector(13 downto 0);
-		rxd, txd: out std_logic;
+		rxd: in std_logic;
+		txd: out std_logic;
 
 		ram_addr: out std_logic_vector(19 downto 0);
 		ram_data: inout std_logic_vector(31 downto 0);
@@ -71,7 +72,8 @@ component phymem is
 		ram_oe: out std_logic;
 		ram_we: out std_logic;
 
-		rxd, txd: out std_logic
+		rxd: in std_logic;
+		txd: out std_logic
 	);
 end component;
 component loader is
