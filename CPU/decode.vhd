@@ -110,8 +110,8 @@ begin
 			--- PC
 			case first is
 				when F_ZERO => npc <= pc + lpc;
-				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ => npc <= pc + sxt(ins(15 downto 0), 32);
-				when F_J | F_JAL => npc <= pc + sxt(ins(25 downto 0), 32);
+				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ => npc <= pc + lpc + sxt(ins(15 downto 0), 32);
+				when F_J | F_JAL => npc <= sxt(ins(25 downto 0), 32);
 				when others => npc <= pc + lpc;
 			end case;
 			--- mem:

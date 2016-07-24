@@ -41,7 +41,7 @@ begin
 				ram_oe <= '1';
 				ram_we <= '1';
 				txd <= '1';
-			elsif state = IF1 or state = MA1 or state = MA3 or state = S5 then
+			elsif state = IF1 or state = MA1 or state = MA3 or state = S6 then
 				if ram_signal(1) = '1' then
 					if addr = THI(19 downto 0) then
 						if ram_signal(0) = '0' then null; else

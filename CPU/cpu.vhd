@@ -128,7 +128,7 @@ begin
 	begin
 		if rst = '0' then
 			clk <= '0';
-		elsif state = S0 or state = S1 or state = S2 or state = S3 or state = S4 or state = S5 then
+		elsif state = S0 or state = S1 or state = S2 or state = S3 or state = S4 or state = S5 or state = S6 then
 			clk <= clk1;
 		else
 			clk <= (sw(31) and clk1) xor clk0; 
@@ -141,11 +141,17 @@ begin
 			if sw(29) = '0' then
 				led <= reg(conv_integer(sw(5 downto 0)))(15 downto 0);
 			else
-				case sw(1 downto 0) is
-					when "00" => led <= pc(15 downto 0);
-					when "01" => led <= npc(15 downto 0);
-					when "10" => led <= imme(15 downto 0);
-					when "11" => led <= ram_data(15 downto 0);
+				case sw(3 downto 0) is
+					when "0000" => led <= pc(15 downto 0);
+					when "0001" => led <= npc(15 downto 0);
+					when "0010" => led <= imme(15 downto 0);
+					when "0100" => led <= ram_data(15 downto 0);
+					when "0101" => led <= ram_data(31 downto 16);
+					when "0110" => led <= flash_out(15 downto 0);
+					when "0111" => led <= flash_out(31 downto 16);
+					when "1000" => led <= addr_in(15 downto 0);
+					when "1010" => led <= data_in(15 downto 0);
+					when "1011" => led <= data_in(31 downto 16);
 					when others => null;
 				end case;
 			end if;
@@ -168,6 +174,8 @@ begin
 			when S2 => num <= "00000010";
 			when S3 => num <= "00000011";
 			when S4 => num <= "00000100";
+			when S5 => num <= "00000101";
+			when S6 => num <= "00000110";
 			when IF0 => num <= "00010000";
 			when IF1 => num <= "00010001";
 			when ID => num <= "00010010";
@@ -177,17 +185,13 @@ begin
 			when MA3 => num <= "00010111";
 			when others => num <= "11111111";
 		end case;
---		with state select
---			num <= "00000" when S0, "00001" when S1, "00010" when S2, "00011" when S3, "00100" when S4, "00101" when S5,
---				"10000" when IF0, "10001" when IF1, "10010" when ID, "10011" when EX, "10100" when MA0, "10101" when MA1,
---				"10110" when MA2, "10111" when MA3;
 	end process;
 
 	process(clk, rst)
 	begin
 		if rst = '0' then
 			state <= S0;
-			addr_in <= (others => '1');
+			addr_in <= (1 => '0', 0 => '0', others => '1');
 		elsif rising_edge(clk) then		
 			case state is
 				when IF0 => state <= IF1;
@@ -222,12 +226,13 @@ begin
 				when S2 => state <= S3;
 				when S3 => state <= S4;
 				when S4 => state <= S5;
+				when S5 => state <= S6;
 					ram_signal <= "11";
-				when S5 =>
+					addr_in <= addr_in + lpc;
+					data_in <= flash_out;
+				when S6 =>
 					if flash_stop = '1' then state <= IF0;
 						else state <= S0; end if;
-					addr_in <= addr_in + "1";
-					data_in <= flash_out;
 				when others => null;
 			end case;
 		end if;
