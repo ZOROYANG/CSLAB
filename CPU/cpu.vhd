@@ -327,6 +327,8 @@ begin
 		alu_result => alu_result,
 		data_out => mem_data);
 
+	txd <= '1';
+	rxd <= '1';
 	u_MEM: phymem port map(clk => clk, rst => rst,
 		state => state, addr => addr_in, data => data_in,
 		ram_signal => ram_signal,
