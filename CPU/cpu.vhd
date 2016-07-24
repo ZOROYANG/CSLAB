@@ -138,7 +138,8 @@ begin
 		if sw(30) = '1' then
 			if sw(29) = '0' then
 				led <= reg(conv_integer(sw(5 downto 0)))(15 downto 0);
-			else case sw(1 downto 0) is
+			else
+				case sw(1 downto 0) is
 					when "00" => led <= pc(15 downto 0);
 					when "01" => led <= npc(15 downto 0);
 					when "10" => led <= imme(15 downto 0);
