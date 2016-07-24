@@ -28,7 +28,7 @@ begin
 			flash_addr <= (others => '0');
 			addr <= (others => '0');
 		elsif rising_edge(clk) then
-			if conv_integer(addr) < 768 then
+			if conv_integer(addr) < 800 then
 				flash_stop <= '0';
 				case state is
 					when S0 =>
