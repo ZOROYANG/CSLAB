@@ -30,7 +30,7 @@ component decode is
 		clk, rst: in std_logic;
 		pc: in std_logic_vector(31 downto 0);
 		ins: in std_logic_vector(31 downto 0);
-		state: in std_logic_vector(2 downto 0);
+		state: in status;
 		
 		npc: out std_logic_vector(31 downto 0);
 		rs_addr, rt_addr, rd_addr: out std_logic_vector(5 downto 0);
@@ -51,7 +51,7 @@ component alu is
 		mem_signal: in std_logic_vector(2 downto 0);
 		alu_signal: in std_logic_vector(5 downto 0);
 		wb_signal: in std_logic_vector(1 downto 0);
-		state: in std_logic_vector(2 downto 0);
+		state: in status;
 		
 		alu_result: out std_logic_vector(31 downto 0);
 		data_out: out std_logic_vector(31 downto 0)
@@ -60,7 +60,7 @@ end component;
 component phymem is
 	port(
 		clk, rst: in std_logic;
-		state: in std_logic_vector(2 downto 0);
+		state: in status;
 		addr: in std_logic_vector(19 downto 0);
 		data: in std_logic_vector(31 downto 0);
 		ram_signal: in std_logic_vector(1 downto 0);
@@ -114,10 +114,11 @@ signal npc: std_logic_vector(31 downto 0);
 signal imme: std_logic_vector(31 downto 0);
 signal addr_in: std_logic_vector(19 downto 0);
 signal data_in: std_logic_vector(31 downto 0);
+signal flash_out: std_logic_vector(31 downto 0);
 signal mem_data: std_logic_vector(31 downto 0);
-signal state : std_logic_vector(2 downto 0):= "000";
 signal num: std_logic_vector(5 downto 0);
-signal alumem: std_logic;
+signal state : status:= S0;
+signal alumem, flash_stop: std_logic;
 
 begin
 
@@ -175,7 +176,7 @@ begin
 					data_in <= mem_data;
 				when MA2 => state <= MA3;
 					ram_signal <= "11";
-					addr_in <= alu_result;
+					addr_in <= alu_result(19 downto 0);
 					data_in <= ram_data(31 downto 8) & mem_data(7 downto 0);
 				when MA3 => state <= IF0;
 				when EX =>
