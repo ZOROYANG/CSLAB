@@ -19,7 +19,8 @@ entity phymem is
 		ram_oe: out std_logic;
 		ram_we: out std_logic;
 
-		rxd, txd: out std_logic
+		rxd: in std_logic;
+		txd: out std_logic
 	);
 end phymem;
 
@@ -33,7 +34,6 @@ begin
 			ram_oe <= '1';
 			ram_we <= '1';
 			txd <= '1';
-			rxd <= '1';
 		elsif rising_edge(clk) then
 			if state = IF0 or state = ID or state = MA0 or state = MA2 or state = S0 then
 				ram_data <= (others => 'Z');
@@ -41,11 +41,10 @@ begin
 				ram_oe <= '1';
 				ram_we <= '1';
 				txd <= '1';
-				rxd <= '1';
 			elsif state = IF1 or state = MA1 or state = MA3 or state = S5 then
 				if ram_signal(1) = '1' then
 					if addr = THI(19 downto 0) then
-						if ram_signal(0) = '0' then rxd <= '0'; else
+						if ram_signal(0) = '0' then null; else
 							txd <= '0';
 							ram_data <= data;
 						end if;
