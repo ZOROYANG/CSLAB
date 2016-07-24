@@ -7,7 +7,7 @@ use work.const.ALL;
 
 entity cpu is
 	port(
-		clk, rst: in std_logic;
+		clk0, clk1, rst: in std_logic;
 		sw: in std_logic_vector(31 downto 0);
 		led: out std_logic_vector(16 downto 0);
 		dyp: out std_logic_vector(13 downto 0);
@@ -87,7 +87,17 @@ component loader is
 		flash_oe: out std_logic
 	);
 end component;
+component display is
+	Port ( 
+		num: in STD_LOGIC_VECTOR (7 downto 0);
+		display_h: out STD_LOGIC_VECTOR (6 downto 0);
+		display_l: out STD_LOGIC_VECTOR (6 downto 0)
+	);
+end component;
 
+
+
+signal clk : std_logic;
 
 type array_vector is array(63 downto 0) of std_logic_vector(31 downto 0);
 signal reg: array_vector := (others => (others => '0'));
@@ -106,11 +116,46 @@ signal addr_in: std_logic_vector(19 downto 0);
 signal data_in: std_logic_vector(31 downto 0);
 signal mem_data: std_logic_vector(31 downto 0);
 signal state : std_logic_vector(2 downto 0):= "000";
+signal num: std_logic_vector(5 downto 0);
 signal alumem: std_logic;
 
 begin
+
+	process(rst, state, sw)
+	begin
+		if rst = '0' then
+			clk <= '0';
+		elsif state = S0 or state = S1 or state = S2 or state = S3 or state = S4 or state = S5 then
+			clk <= clk1;
+		else
+			clk <= (sw(31) and clk1) xor clk0; 
+		end if;
+	end process;
+
+	process(sw)
+	begin
+		if sw(30) = '1' then
+			if sw(29) = '0' then
+				led <= reg(conv_integer(sw(5 downto 0)));
+			else with sw(1 downto 0) select
+				led <= pc when "00", npc when "01", imme when "10", ram_data when "11";
+			end if;
+		elsif sw(29) = '1' then
+			led <= alu_signal & "00" & cmp_signal & "0" & mem_signal & wb_signal & "0000" & ram_signal & "00000000";
+		elsif sw(28) = '1' then
+			null;
+		end if;
+	end process;
+
+	process(state)
+	begin
+		with state select
+			num <= "00000" when S0, "00001" when S1, "00010" when S2, "00011" when S3, "00100" when S4, "00101" when S5,
+				"10000" when IF0, "10001" when IF1, "10010" when ID, "10011" when EX, "10100" when MA0, "10101" when MA1,
+				"10110" when MA2, "10111" when MA3;
+	end process;
+
 	process(clk, rst)
-	variable reg:std_logic_vector(3 downto 0);
 	begin
 		if rst = '0' then
 			state <= S0;
@@ -276,5 +321,11 @@ begin
 		state => state,
 		flash_data => flash_data, flash_addr => flash_addr,
 		flash_out => flash_out, flash_stop => flash_stop, flash_oe => flash_oe);
+
+	u_DIS: display port map( 
+		num => "000" & num,
+		display_h => dyp(13 downto 7),
+		display_l => dyp(6 downto 0));
+
 
 end Behavioral;
