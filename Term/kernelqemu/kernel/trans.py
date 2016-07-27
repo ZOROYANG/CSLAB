@@ -23,7 +23,7 @@ def to_bitmap(h):
 
 
 def isJ(bitstr):
-	if bitstr[0:6] in (F_J, F_BEQ):
+	if bitstr[0:6] in (F_J, F_JAL):
 		return True
 	else:
 		return bitstr[0:6] == F_ZERO and bitstr[26:32] in (L_JALR, L_JR)
