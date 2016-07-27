@@ -36,11 +36,11 @@ begin
 			if alu_signal(5) = '1' then
 				imreg := imme;
 			else
-				if alu_signal(3 downto 0) = "0110" or alu_signal(3 downto 0) = "0110" or
-					alu_signal(3 downto 0) = "0110" then
-					imreg := rt_value;
-				else
+				if alu_signal(3 downto 0) = "0110" or alu_signal(3 downto 0) = "0111" or
+					alu_signal(3 downto 0) = "1000" then
 					imreg := rs_value;
+				else
+					imreg := rt_value;
 				end if;
 			end if;
 			--- alu signal: 5+4+3210

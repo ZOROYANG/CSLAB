@@ -74,6 +74,7 @@ component phymem is
 		ram_we: out std_logic;
 
 		data_ready: in std_logic;
+		write_ready: in std_logic;
 		rdn: out std_logic;
 		wrn: out std_logic
 	);
@@ -125,6 +126,11 @@ signal num: std_logic_vector(7 downto 0);
 signal state : status:= S0;
 signal alumem, flash_stop: std_logic;
 signal wrns, rdns: std_logic;
+signal writes: std_logic_vector(15 downto 0);
+signal read_ready: std_logic;
+signal write_ready: std_logic;
+
+signal flag: std_logic;
 
 signal lsw: std_logic;
 signal spc: std_logic_vector(31 downto 0);
@@ -158,12 +164,24 @@ begin
 		end if;
 	end process;
 	
-	process(rst, state, sw, clk0, clk1s)
+	process (rst, pc)
+	begin
+		if rst = '0' then
+			flag <= '0';
+		elsif conv_integer(pc) = 432 then
+			flag <= '1';
+		else flag <= flag;
+		end if;
+	end process;
+	
+	process(rst, state, sw, clk0, clk1s, pc)
 	begin
 		if rst = '0' then
 			clkt <= '0';
 		elsif state = S0 or state = S1 or state = S2 or state = S3 or state = S4 or state = S5 or state = S6 then
 			clkt <= (sw(15) and clk1s(1)) xor clk0;
+		elsif flag = '0' then
+			clkt <= clk1s(1) xor clk0;
 		else
 			clkt <= (sw(31) and clk1s(1)) xor clk0;
 		end if;
@@ -208,8 +226,12 @@ begin
 			case sw(2 downto 0) is
 				when "000" => led <= rs_addr & "0000" & rt_addr;
 				when "001" => led <= rd_addr & "0000000000";
-				when "010" => led <= alu_result(15 downto 0);
-				when "011" => led <= alu_result(31 downto 16);
+				when "010" => led <= rs_value(15 downto 0);
+				when "011" => led <= rs_value(31 downto 16);
+				when "100" => led <= rt_value(15 downto 0);
+				when "101" => led <= rt_value(31 downto 16);
+				when "110" => led <= alu_result(15 downto 0);
+				when "111" => led <= alu_result(31 downto 16);
 				when others => null;
 			end case;
 		end if;
@@ -301,7 +323,7 @@ begin
 	variable sv, tv: std_logic_vector(31 downto 0);
 	begin
 		if rst = '0' then
-			pc <= x"00000130";
+			pc <= x"00000124";
 			lsw <= sw(13);
 			spc <= (others => '1');
 		elsif rising_edge(clk) and state = EX then
@@ -330,7 +352,7 @@ begin
 			
 			if sw(13) /= lsw and spc /= sxt("1", 32) then
 				spc <= pc;
-				pc <= x"00001000";
+				pc <= x"60000000";
 			elsif (cmp_signal = "0001" and sv = tv) or (cmp_signal = "0010" and sv /= tv) or
 				(cmp_signal = "0011" and sv > 0) or (cmp_signal = "0100" and sv >= 0) or
 				(cmp_signal = "0101" and sv < 0) or (cmp_signal = "0110" and sv <= 0) or
@@ -343,6 +365,21 @@ begin
 				spc <= (others => '1');
 			else
 				pc <= pc + lpc;
+			end if;
+		end if;
+	end process;
+	
+	process(clk1s, rst, wrns)
+	begin
+		if rst = '0' then
+			write_ready <= '0';
+		elsif wrns = '0' or rdns = '0' then
+			write_ready <= '0';
+			writes <= (others => '0');
+		elsif rising_edge(clk1s(1)) then
+			writes <= writes + "0000000000000001";
+			if writes = "1111111111111111" then
+				write_ready <= '1';
 			end if;
 		end if;
 	end process;
@@ -425,7 +462,7 @@ begin
 		ram_signal => ram_signal,
 		ram_addr => debug_addr, ram_data => ram_data, data_out => ram_out,
 		ram_ce => ram_ce, ram_oe => ram_oe, ram_we => ram_we,
-		data_ready => data_ready, rdn => rdns, wrn => wrns);
+		data_ready => write_ready, write_ready => write_ready, rdn => rdns, wrn => wrns);
 
 	flash_byte <= '1';
 	flash_rp <= '1';

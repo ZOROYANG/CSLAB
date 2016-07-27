@@ -21,6 +21,7 @@ entity phymem is
 		ram_we: out std_logic;
 
 		data_ready: in std_logic;
+		write_ready: in std_logic;
 		rdn: out std_logic;
 		wrn: out std_logic
 	);
@@ -46,7 +47,7 @@ begin
 							if addr = CADDR then mstate <= "0101";
 							elsif addr = SADDR then
 								mstate <= "0000";
-								data_out <= (1 => data_ready, others => '1');
+								data_out <= (1 => data_ready, 0 => write_ready, others => '1');
 							else mstate <= "0001"; end if;
 						else
 							if addr = CADDR then mstate <= "1101";

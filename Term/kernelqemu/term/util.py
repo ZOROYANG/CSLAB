@@ -30,6 +30,7 @@ def hex_str(argv):
 def read_a_word(ser):
 	raw_data = ser.read(4)
 	data = []
+	print raw_data
 	for i in xrange(4):
 		data.append(ord(raw_data[i]))
 	if little_endian:
@@ -57,7 +58,7 @@ def read_wait(ser):
 
 def show_regs(oparr, ser):
 	ser.write('R')
-	time.sleep(0.1)
+	raw_input()
 	for i in range(2, 31):
 		raw_data = read_a_word(ser)
 		hex_s = hex_str(raw_data)
