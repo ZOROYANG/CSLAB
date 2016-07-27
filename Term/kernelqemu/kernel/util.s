@@ -1,7 +1,7 @@
 # TODO: it is MMIO address of MARS simulator,
 # so there need be changed when the code runs on THICO board.
 
-.equ SerialMode, 1
+.equ SerialMode, 0
 .equ MMIOMode, 0
 .equ UARTMode, 1
 
