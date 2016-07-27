@@ -9,37 +9,37 @@ Disassembly of section .data:
    4:	fc030825 	addiu	t0,t0,1020
    8:	0000098d 	lw	t1,0(t0)
    c:	01002931 	andi	t1,t1,0x1
-  10:	00000000 	nop
-  14:	faff2011 	beqz	t1,0x0
-  18:	00000000 	nop
-  1c:	0800e003 	jr	ra
+  10:	fbff2011 	beqz	t1,0x0
+  14:	00000000 	nop
+  18:	0800e003 	jr	ra
+  1c:	00000000 	nop
   20:	00000000 	nop
   24:	d01f083c 	lui	t0,0x1fd0
   28:	fc030825 	addiu	t0,t0,1020
   2c:	0000098d 	lw	t1,0(t0)
   30:	02002931 	andi	t1,t1,0x2
-  34:	00000000 	nop
-  38:	faff2011 	beqz	t1,0x24
-  3c:	00000000 	nop
-  40:	0800e003 	jr	ra
+  34:	fbff2011 	beqz	t1,0x24
+  38:	00000000 	nop
+  3c:	0800e003 	jr	ra
+  40:	00000000 	nop
   44:	00000000 	nop
   48:	d0bf083c 	lui	t0,0xbfd0
   4c:	f8030825 	addiu	t0,t0,1016
   50:	05000981 	lb	t1,5(t0)
   54:	20002931 	andi	t1,t1,0x20
-  58:	00000000 	nop
-  5c:	faff2011 	beqz	t1,0x48
-  60:	00000000 	nop
-  64:	0800e003 	jr	ra
+  58:	fbff2011 	beqz	t1,0x48
+  5c:	00000000 	nop
+  60:	0800e003 	jr	ra
+  64:	00000000 	nop
   68:	00000000 	nop
   6c:	d0bf083c 	lui	t0,0xbfd0
   70:	f8030825 	addiu	t0,t0,1016
   74:	05000981 	lb	t1,5(t0)
   78:	01002931 	andi	t1,t1,0x1
-  7c:	00000000 	nop
-  80:	faff2011 	beqz	t1,0x6c
-  84:	00000000 	nop
-  88:	0800e003 	jr	ra
+  7c:	fbff2011 	beqz	t1,0x6c
+  80:	00000000 	nop
+  84:	0800e003 	jr	ra
+  88:	00000000 	nop
   8c:	00000000 	nop
   90:	0000ec27 	addiu	t4,ra,0
   94:	0400ad25 	addiu	t5,t5,4
@@ -71,12 +71,12 @@ Disassembly of section .data:
   fc:	d01f083c 	lui	t0,0x1fd0
  100:	f8030825 	addiu	t0,t0,1016
  104:	ff002130 	andi	at,at,0xff
- 108:	000001ad 	sw	at,0(t0)
- 10c:	e1ffae15 	bne	t5,t6,0x94
+ 108:	e2ffae15 	bne	t5,t6,0x94
+ 10c:	000001ad 	sw	at,0(t0)
  110:	00000000 	nop
  114:	00009f25 	addiu	ra,t4,0
- 118:	00000000 	nop
- 11c:	0800e003 	jr	ra
+ 118:	0800e003 	jr	ra
+ 11c:	00000000 	nop
  120:	00000000 	nop
  124:	0000000c 	jal	0x0
  128:	00000000 	nop
@@ -111,8 +111,8 @@ Disassembly of section .data:
  19c:	21600b01 	addu	t4,t0,t3
  1a0:	000000ad 	sw	zero,0(t0)
  1a4:	01002925 	addiu	t1,t1,1
- 1a8:	04006b25 	addiu	t3,t3,4
- 1ac:	fbff2a15 	bne	t1,t2,0x19c
+ 1a8:	fcff2a15 	bne	t1,t2,0x19c
+ 1ac:	04006b25 	addiu	t3,t3,4
  1b0:	0900000c 	jal	0x24
  1b4:	00000000 	nop
  1b8:	00000000 	nop
@@ -123,24 +123,24 @@ Disassembly of section .data:
  1cc:	24104800 	and	v0,v0,t0
  1d0:	00004b24 	addiu	t3,v0,0
  1d4:	52000824 	li	t0,82
- 1d8:	00000000 	nop
- 1dc:	11006811 	beq	t3,t0,0x224
+ 1d8:	12006811 	beq	t3,t0,0x224
+ 1dc:	00000000 	nop
  1e0:	00000000 	nop
  1e4:	44000824 	li	t0,68
- 1e8:	00000000 	nop
- 1ec:	1a006811 	beq	t3,t0,0x258
+ 1e8:	1b006811 	beq	t3,t0,0x258
+ 1ec:	00000000 	nop
  1f0:	00000000 	nop
  1f4:	41000824 	li	t0,65
- 1f8:	00000000 	nop
- 1fc:	6a006811 	beq	t3,t0,0x3a8
+ 1f8:	6b006811 	beq	t3,t0,0x3a8
+ 1fc:	00000000 	nop
  200:	00000000 	nop
  204:	55000824 	li	t0,85
  208:	00000000 	nop
  20c:	47000824 	li	t0,71
- 210:	00000000 	nop
- 214:	c7006811 	beq	t3,t0,0x534
- 218:	00000000 	nop
- 21c:	e4ff0010 	b	0x1b0
+ 210:	c8006811 	beq	t3,t0,0x534
+ 214:	00000000 	nop
+ 218:	e5ff0010 	b	0x1b0
+ 21c:	00000000 	nop
  220:	00000000 	nop
  224:	00800d3c 	lui	t5,0x8000
  228:	0400ad25 	addiu	t5,t5,4
@@ -152,8 +152,8 @@ Disassembly of section .data:
  240:	d01f083c 	lui	t0,0x1fd0
  244:	f8030825 	addiu	t0,t0,1016
  248:	00000924 	li	t1,0
- 24c:	000009ad 	sw	t1,0(t0)
- 250:	d7ff0010 	b	0x1b0
+ 24c:	d8ff0010 	b	0x1b0
+ 250:	000009ad 	sw	t1,0(t0)
  254:	00000000 	nop
  258:	0900000c 	jal	0x24
  25c:	00000c24 	li	t4,0
@@ -236,8 +236,8 @@ Disassembly of section .data:
  390:	d01f083c 	lui	t0,0x1fd0
  394:	f8030825 	addiu	t0,t0,1016
  398:	00000924 	li	t1,0
- 39c:	000009ad 	sw	t1,0(t0)
- 3a0:	83ff0010 	b	0x1b0
+ 39c:	84ff0010 	b	0x1b0
+ 3a0:	000009ad 	sw	t1,0(t0)
  3a4:	00000000 	nop
  3a8:	0900000c 	jal	0x24
  3ac:	00000c24 	li	t4,0
@@ -313,8 +313,8 @@ Disassembly of section .data:
  4c4:	00160200 	sll	v0,v0,0x18
  4c8:	21108201 	addu	v0,t4,v0
  4cc:	00004d24 	addiu	t5,v0,0
- 4d0:	00000000 	nop
- 4d4:	0e00ae11 	beq	t5,t6,0x510
+ 4d0:	0f00ae11 	beq	t5,t6,0x510
+ 4d4:	00000000 	nop
  4d8:	00000000 	nop
  4dc:	0900000c 	jal	0x24
  4e0:	00000000 	nop
@@ -326,8 +326,8 @@ Disassembly of section .data:
  4f8:	24104800 	and	v0,v0,t0
  4fc:	0000c2a1 	sb	v0,0(t6)
  500:	0100ce25 	addiu	t6,t6,1
- 504:	00000000 	nop
- 508:	f4ffae15 	bne	t5,t6,0x4dc
+ 504:	f5ffae15 	bne	t5,t6,0x4dc
+ 508:	00000000 	nop
  50c:	00000000 	nop
  510:	0000000c 	jal	0x0
  514:	00000000 	nop
@@ -335,8 +335,8 @@ Disassembly of section .data:
  51c:	d01f083c 	lui	t0,0x1fd0
  520:	f8030825 	addiu	t0,t0,1016
  524:	00000924 	li	t1,0
- 528:	000009ad 	sw	t1,0(t0)
- 52c:	20ff0010 	b	0x1b0
+ 528:	21ff0010 	b	0x1b0
+ 52c:	000009ad 	sw	t1,0(t0)
  530:	00000000 	nop
  534:	0900000c 	jal	0x24
  538:	00000c24 	li	t4,0
@@ -405,8 +405,8 @@ Disassembly of section .data:
  634:	6c003b8c 	lw	k1,108(at)
  638:	70003c8c 	lw	gp,112(at)
  63c:	74003d8c 	lw	sp,116(at)
- 640:	78003e8c 	lw	s8,120(at)
- 644:	09f8e003 	jalr	ra
+ 640:	09f8e003 	jalr	ra
+ 644:	78003e8c 	lw	s8,120(at)
  648:	00000000 	nop
  64c:	0080013c 	lui	at,0x8000
  650:	00002124 	addiu	at,at,0
@@ -444,6 +444,6 @@ Disassembly of section .data:
  6d0:	d01f083c 	lui	t0,0x1fd0
  6d4:	f8030825 	addiu	t0,t0,1016
  6d8:	00000924 	li	t1,0
- 6dc:	000009ad 	sw	t1,0(t0)
- 6e0:	b3fe0010 	b	0x1b0
+ 6dc:	b4fe0010 	b	0x1b0
+ 6e0:	000009ad 	sw	t1,0(t0)
  6e4:	00000000 	nop
