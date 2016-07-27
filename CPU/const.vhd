@@ -13,7 +13,8 @@ use IEEE.STD_LOGIC_1164.all;
 package const is
 
 constant ZERO16 : std_logic_vector(15 downto 0) :=   (others => '0');
-constant THI : std_logic_vector(31 downto 0) := "10111111110100000000001111111000";
+constant CADDR : std_logic_vector(19 downto 0) := x"103f8";
+constant SADDR : std_logic_vector(19 downto 0) := x"103fc";
 
 constant F_ZERO : std_logic_vector(5 downto 0) :=   "000000";
 constant L_ADDU : std_logic_vector(5 downto 0) := 	"100001";
@@ -65,7 +66,6 @@ constant L_TLBWI : std_logic_vector(5 downto 0) := "000010";
 
 
 constant ra : std_logic_vector(5 downto 0) := "011111";
-constant epc: std_logic_vector(5 downto 0) := "011110";
 constant lpc: std_logic_vector(2 downto 0) := "100";
 
 type STATUS is (IF0, IF1, ID, EX, MA0, MA1, MA2, MA3, ST, S0, S1, S2, S3, S4, S5, S6);

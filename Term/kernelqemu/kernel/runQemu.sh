@@ -1,0 +1,1 @@
+qemu-system-mipsel -M mipssim -kernel kernel -serial pty -S

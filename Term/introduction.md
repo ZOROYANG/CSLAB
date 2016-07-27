@@ -1,3 +1,4 @@
 INTRODUCTION for the Folder
 ==============
-This is the workspace for Ucore~ 
+This is the workspace for Term
+Thanks wxd

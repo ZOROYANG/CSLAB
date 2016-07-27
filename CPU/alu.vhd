@@ -83,7 +83,7 @@ begin
 							alu_result <= (others => '0');
 						end if;
 					when "1010" => alu_result <= rd_value;
-					when "1011" => alu_result <= rt_value;
+					when "1011" => alu_result <= imreg;
 					when "1100" =>
 						if (unsigned(rs_value) < unsigned(imreg)) then
 							alu_result <= (0 => '1', others => '0');

@@ -110,8 +110,8 @@ begin
 			--- PC
 			case first is
 				when F_ZERO => npc <= pc + lpc;
-				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ => npc <= pc + lpc + sxt(ins(15 downto 0), 32);
-				when F_J | F_JAL => npc <= sxt(ins(25 downto 0), 32);
+				when F_BEQ | F_BNE | F_BGEZBLTZ | F_BGTZ | F_BLEZ => npc <= pc + lpc + sxt(ins(15 downto 0) & "00", 32);
+				when F_J | F_JAL => npc <= sxt(ins(25 downto 0) & "00", 32);
 				when others => npc <= pc + lpc;
 			end case;
 			--- mem:
@@ -151,7 +151,7 @@ begin
 			case first is
 				when F_ZERO =>
 				case last is
-					when L_MULT | L_MTLO | L_MTHI | L_SYSCALL => wb_signal <= "00";
+					when L_MULT | L_MTLO | L_MTHI | L_JR | L_SYSCALL => wb_signal <= "00";
 					when L_JALR => wb_signal <= "11";
 					when others => wb_signal <= "10";
 				end case;

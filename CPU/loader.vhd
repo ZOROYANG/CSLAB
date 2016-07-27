@@ -28,7 +28,7 @@ begin
 			flash_addr <= (others => '0');
 			addr <= (others => '0');
 		elsif rising_edge(clk) then
-			if conv_integer(addr) < 800 then
+			if conv_integer(addr) < 1000 then
 				flash_stop <= '0';
 				case state is
 					when S0 =>
@@ -39,7 +39,7 @@ begin
 					when S1 =>
 						flash_oe <= '0';
 					when S2 =>
-						flash_out(31 downto 16) <= flash_data;
+						flash_out(15 downto 0) <= flash_data;
 						flash_oe <= '1';
 						flash_data <= (others => 'Z');
 						flash_addr <= addr;
@@ -47,7 +47,7 @@ begin
 					when S3 =>
 						flash_oe <= '0';
 					when S4 =>
-						flash_out(15 downto 0) <= flash_data;
+						flash_out(31 downto 16) <= flash_data;
 						flash_oe <= '1';
 					when others => null;
 				end case;
@@ -57,4 +57,3 @@ begin
 		end if;
 	end process;
 end Behavioral;
-
